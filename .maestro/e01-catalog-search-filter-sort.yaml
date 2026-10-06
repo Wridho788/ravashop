@@ -1,0 +1,49 @@
+# SHOP-E01 (P0 / SHOP-01, SHOP-02)
+# Given a clean shop-v1 seed
+# When the user searches "ransel", filters category Tas, sorts by price, and opens the detail
+# Then results, order, price, and stock match the fixture and the right product opens
+appId: com.ravashop
+name: SHOP-E01 catalog search, filter, sort, detail
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "catalog.search"
+- inputText: "ransel"
+- hideKeyboard
+- assertVisible:
+    id: "product.product-bag"
+- assertNotVisible:
+    id: "product.product-tote"
+- tapOn:
+    id: "catalog.search.clear"
+- tapOn:
+    id: "catalog.category.cat-bag"
+- tapOn:
+    id: "catalog.sort.price-asc"
+- assertVisible:
+    id: "product.product-tote"
+    leftOf:
+      id: "product.product-bag"
+- assertNotVisible:
+    id: "product.product-bottle"
+- tapOn:
+    id: "catalog.sort.price-desc"
+- assertVisible:
+    id: "product.product-bag"
+    leftOf:
+      id: "product.product-tote"
+- takeScreenshot: evidence/e01-category-sorted
+- tapOn:
+    id: "product.product-bag"
+- assertVisible:
+    id: "detail.name"
+    text: "Tas Ransel Kanvas"
+- assertVisible:
+    id: "detail.price"
+    text: "Rp250.000"
+- assertVisible:
+    id: "detail.stock"
+    text: "Stok 3"
+- takeScreenshot: evidence/e01-detail

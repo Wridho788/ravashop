@@ -1,0 +1,6 @@
+# Maestro workspace config. Flows in this folder are independent; each starts from a
+# clean shop-v1 fixture via subflows/launch-clean.yaml unless it tests persistence.
+flows:
+  - "*.yaml"
+executionOrder:
+  continueOnFailure: true

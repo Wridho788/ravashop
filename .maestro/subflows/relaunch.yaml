@@ -1,0 +1,10 @@
+# Stop the process and start it again WITHOUT clearing data (persistence check).
+appId: com.ravashop
+---
+- stopApp
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible:
+      id: "catalog.search"
+    timeout: 30000

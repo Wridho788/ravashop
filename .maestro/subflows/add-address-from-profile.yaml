@@ -1,0 +1,15 @@
+# Adds the test address through Profil -> Alamat saya, then returns to Beranda.
+appId: com.ravashop
+---
+- tapOn:
+    id: "tab.profile"
+- tapOn:
+    id: "profile.addresses"
+- tapOn:
+    id: "addresses.add"
+- runFlow: fill-address.yaml
+- assertVisible:
+    id: "address.item.0"
+- back
+- tapOn:
+    id: "tab.home"

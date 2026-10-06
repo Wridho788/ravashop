@@ -1,0 +1,15 @@
+# Precondition: the address form is open. Fills the fictitious test address and saves.
+appId: com.ravashop
+---
+- tapOn:
+    id: "address.form.recipient"
+- inputText: "Pengguna Demo"
+- tapOn:
+    id: "address.form.phone"
+- inputText: "081234567890"
+- tapOn:
+    id: "address.form.addressText"
+- inputText: "Jalan Contoh 10, Kota Demo"
+- hideKeyboard
+- tapOn:
+    id: "address.form.save"

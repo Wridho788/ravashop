@@ -1,0 +1,32 @@
+# SHOP-E03 (P0 / SHOP-03, SHOP-08)
+# Given an empty wishlist
+# When the user favourites the bag, relaunches, opens the wishlist, and removes it
+# Then one bag survives the relaunch; after removal the wishlist is empty
+appId: com.ravashop
+name: SHOP-E03 wishlist survives relaunch
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "product.product-bag"
+- tapOn:
+    id: "detail.wishlist"
+- assertVisible: "Disimpan ke wishlist"
+- tapOn:
+    id: "detail.wishlist"
+- tapOn:
+    id: "detail.wishlist"
+- back
+- runFlow: subflows/relaunch.yaml
+- tapOn:
+    id: "tab.wishlist"
+- assertVisible:
+    id: "wishlist.item.product-bag"
+- assertNotVisible:
+    id: "wishlist.item.product-bottle"
+- takeScreenshot: evidence/e03-after-relaunch
+- tapOn:
+    id: "wishlist.item.product-bag.remove"
+- assertVisible:
+    id: "wishlist.empty"

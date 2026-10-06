@@ -1,0 +1,24 @@
+# Precondition: Beranda with shop-v1. Puts two bags and one bottle in the cart.
+appId: com.ravashop
+---
+- tapOn:
+    id: "product.product-bag"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 1"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 2"
+- back
+- tapOn:
+    id: "product.product-bottle"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 1"
+- back

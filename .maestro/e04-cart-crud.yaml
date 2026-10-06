@@ -1,0 +1,45 @@
+# SHOP-E04 (P0 / SHOP-04)
+# Given an empty cart
+# When the user adds the bag twice, changes quantity to 3, then removes it
+# Then one line with quantity 2 then 3; after removal the cart is empty and checkout is disabled
+appId: com.ravashop
+name: SHOP-E04 cart add, merge, update, remove
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "product.product-bag"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 1"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 2"
+- tapOn:
+    id: "detail.go-to-cart"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "2"
+- tapOn:
+    id: "cart.item.product-bag.increase"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "3"
+- assertVisible:
+    id: "cart.subtotal"
+    text: "Rp750.000"
+- takeScreenshot: evidence/e04-quantity-3
+- tapOn:
+    id: "cart.item.product-bag.remove"
+- tapOn:
+    id: "android:id/button1"
+- assertVisible:
+    id: "cart.empty"
+- assertVisible:
+    id: "cart.checkout"
+    enabled: false

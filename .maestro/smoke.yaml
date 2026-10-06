@@ -1,0 +1,16 @@
+# Smoke: the installed app starts, seeds shop-v1, and opens a product detail.
+appId: com.ravashop
+name: SMOKE app starts and shows the catalog
+tags:
+  - smoke
+---
+- runFlow: subflows/launch-clean.yaml
+- assertVisible: "Temukan barang favoritmu"
+- assertVisible:
+    id: "product.product-bag"
+- tapOn:
+    id: "product.product-bag"
+- assertVisible:
+    id: "detail.name"
+    text: "Tas Ransel Kanvas"
+- takeScreenshot: evidence/smoke-detail

@@ -1,0 +1,19 @@
+# Opens a product from Beranda and checks its stock text. Params: PRODUCT, STOCK_TEXT.
+appId: com.ravashop
+---
+- tapOn:
+    id: "tab.home"
+- tapOn:
+    id: "catalog.search"
+- eraseText
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "product.${PRODUCT}"
+    direction: DOWN
+- tapOn:
+    id: "product.${PRODUCT}"
+- assertVisible:
+    id: "detail.stock"
+    text: "${STOCK_TEXT}"
+- back

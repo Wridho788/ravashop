@@ -1,0 +1,39 @@
+# SHOP-E08 (P0 / SHOP-05, SHOP-06, SHOP-09)
+# Given a cart with items and no address
+# When the user tries to confirm
+# Then no order is created, stock is unchanged, and the user is asked to choose an address
+appId: com.ravashop
+name: SHOP-E08 checkout blocked without address
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "product.product-bag"
+- tapOn:
+    id: "detail.add-to-cart"
+- tapOn:
+    id: "detail.go-to-cart"
+- tapOn:
+    id: "cart.checkout"
+- assertVisible:
+    id: "checkout.address.none"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "checkout.error"
+- assertVisible: "Pilih alamat pengiriman terlebih dahulu."
+- takeScreenshot: evidence/e08-no-address
+- back
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "1"
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.empty"
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 3

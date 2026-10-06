@@ -1,0 +1,72 @@
+# SHOP-E05 (P0 / SHOP-02, SHOP-04, SHOP-09)
+# Given bag stock 3 and a product with stock 0
+# When the user tries quantity 4, quantity 0, and buying the sold-out product
+# Then each is blocked with a clear message and data stays within the rules
+# Note: fractional quantities cannot be entered (stepper only); the repository rejection of
+# 0 / 1.5 / 4 is covered by __tests__/repository.integration.test.ts.
+appId: com.ravashop
+name: SHOP-E05 stock and quantity limits
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "product.product-bag"
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          id: "detail.add-to-cart"
+      - waitForAnimationToEnd
+- assertVisible:
+    id: "detail.in-cart"
+    text: "Di keranjang: 3"
+- assertVisible:
+    id: "detail.add-to-cart"
+    enabled: false
+- assertVisible: "Jumlah maksimal di keranjang"
+- tapOn:
+    id: "detail.go-to-cart"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "3"
+- assertVisible:
+    id: "cart.item.product-bag.increase"
+    enabled: false
+- assertVisible:
+    id: "cart.item.product-bag.max"
+    text: "Maks. 3"
+- tapOn:
+    id: "cart.item.product-bag.decrease"
+- tapOn:
+    id: "cart.item.product-bag.decrease"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "1"
+- assertVisible:
+    id: "cart.item.product-bag.decrease"
+    enabled: false
+- takeScreenshot: evidence/e05-min-quantity
+- tapOn:
+    id: "tab.home"
+- scrollUntilVisible:
+    element:
+      id: "product.product-sold-out"
+    direction: DOWN
+- tapOn:
+    id: "product.product-sold-out"
+- assertVisible:
+    id: "detail.stock"
+    text: "Stok habis"
+- assertVisible:
+    id: "detail.add-to-cart"
+    enabled: false
+- takeScreenshot: evidence/e05-sold-out
+- back
+- tapOn:
+    id: "tab.cart"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "1"
+- assertNotVisible:
+    id: "cart.item.product-sold-out"

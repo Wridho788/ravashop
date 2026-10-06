@@ -1,0 +1,73 @@
+# SHOP-E14 (P0 / SHOP-10)
+# Given local changes exist
+# When the user opens reset and cancels; then confirms reset and relaunches
+# Then cancel keeps the data; confirm restores the fixture once without duplicates
+appId: com.ravashop
+name: SHOP-E14 reset demo with confirmation
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- scrollUntilVisible:
+    element:
+      id: "product.product-watch"
+    direction: DOWN
+- tapOn:
+    id: "product.product-watch"
+- tapOn:
+    id: "detail.wishlist"
+- back
+- tapOn:
+    id: "tab.profile"
+- scrollUntilVisible:
+    element:
+      id: "settings.reset"
+    direction: DOWN
+- tapOn:
+    id: "settings.reset"
+- assertVisible: "Reset data demo?"
+- tapOn:
+    id: "android:id/button2"
+- tapOn:
+    id: "tab.cart"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "2"
+- tapOn:
+    id: "tab.profile"
+- scrollUntilVisible:
+    element:
+      id: "settings.reset"
+    direction: DOWN
+- tapOn:
+    id: "settings.reset"
+- tapOn:
+    id: "android:id/button1"
+- assertVisible: "Data demo dipulihkan"
+- runFlow: subflows/relaunch.yaml
+- tapOn:
+    id: "tab.cart"
+- assertVisible:
+    id: "cart.empty"
+- tapOn:
+    id: "tab.wishlist"
+- assertVisible:
+    id: "wishlist.empty"
+- tapOn:
+    id: "tab.profile"
+- tapOn:
+    id: "profile.addresses"
+- assertVisible:
+    id: "addresses.empty"
+- back
+- assertVisible:
+    id: "profile.seed"
+    text: "Versi data: shop-v1"
+- takeScreenshot: evidence/e14-after-reset
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 3

@@ -1,0 +1,75 @@
+# SHOP-E15 (P0 / SHOP-09) — requires the E2E build (npm run build:android:e2e)
+# Given an address/cart write is rejected by a controlled fault
+# When the user saves the change
+# Then an error is visible with no false success; a relaunch shows the last committed data
+appId: com.ravashop
+name: SHOP-E15 failed writes show an error and keep committed data
+tags:
+  - p0
+  - e2e-build
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- tapOn:
+    id: "tab.profile"
+- scrollUntilVisible:
+    element:
+      id: "e2e.fault.write"
+    direction: DOWN
+- tapOn:
+    id: "e2e.fault.write"
+- scrollUntilVisible:
+    element:
+      id: "profile.addresses"
+    direction: UP
+- tapOn:
+    id: "profile.addresses"
+- tapOn:
+    id: "address.item.0.edit"
+- tapOn:
+    id: "address.form.recipient.clear"
+- tapOn:
+    id: "address.form.recipient"
+- inputText: "Gagal Simpan"
+- hideKeyboard
+- tapOn:
+    id: "address.form.save"
+- assertVisible:
+    id: "address.form.error"
+- assertVisible: "Alamat gagal disimpan. Data tidak berubah."
+- assertNotVisible: "Alamat diperbarui"
+- takeScreenshot: evidence/e15-address-fault
+- back
+- back
+- tapOn:
+    id: "tab.profile"
+- scrollUntilVisible:
+    element:
+      id: "e2e.fault.write"
+    direction: DOWN
+- tapOn:
+    id: "e2e.fault.write"
+- tapOn:
+    id: "tab.home"
+- tapOn:
+    id: "product.product-bag"
+- tapOn:
+    id: "detail.add-to-cart"
+- assertVisible:
+    id: "detail.error"
+- assertVisible: "Keranjang gagal disimpan. Data tidak berubah."
+- assertNotVisible:
+    id: "detail.in-cart"
+- takeScreenshot: evidence/e15-cart-fault
+- back
+- runFlow: subflows/relaunch.yaml
+- tapOn:
+    id: "tab.cart"
+- assertVisible:
+    id: "cart.empty"
+- tapOn:
+    id: "tab.profile"
+- tapOn:
+    id: "profile.addresses"
+- assertVisible: "Pengguna Demo"
+- assertNotVisible: "Gagal Simpan"

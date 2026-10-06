@@ -1,0 +1,65 @@
+# SHOP-E06 (P0 / SHOP-05, SHOP-09)
+# Given no saved address
+# When the user saves empty required fields, then adds, reads, edits, and deletes a valid address
+# Then each field shows an error; CRUD is stored; a deleted address cannot be chosen at checkout
+appId: com.ravashop
+name: SHOP-E06 address validation and CRUD
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "tab.profile"
+- tapOn:
+    id: "profile.addresses"
+- assertVisible:
+    id: "addresses.empty"
+- tapOn:
+    id: "addresses.add"
+- tapOn:
+    id: "address.form.save"
+- assertVisible:
+    id: "address.form.recipient.error"
+- assertVisible:
+    id: "address.form.phone.error"
+- assertVisible:
+    id: "address.form.addressText.error"
+- takeScreenshot: evidence/e06-field-errors
+- runFlow: subflows/fill-address.yaml
+- assertVisible:
+    id: "address.item.0"
+- assertVisible: "Pengguna Demo"
+- assertVisible: "Jalan Contoh 10, Kota Demo"
+- tapOn:
+    id: "address.item.0.edit"
+- tapOn:
+    id: "address.form.addressText.clear"
+- tapOn:
+    id: "address.form.addressText"
+- inputText: "Jalan Contoh 20, Kota Demo"
+- hideKeyboard
+- tapOn:
+    id: "address.form.save"
+- assertVisible: "Jalan Contoh 20, Kota Demo"
+- assertNotVisible: "Jalan Contoh 10, Kota Demo"
+- takeScreenshot: evidence/e06-edited
+- tapOn:
+    id: "address.item.0.delete"
+- tapOn:
+    id: "android:id/button1"
+- assertVisible:
+    id: "addresses.empty"
+- back
+- tapOn:
+    id: "tab.home"
+- tapOn:
+    id: "product.product-bottle"
+- tapOn:
+    id: "detail.add-to-cart"
+- tapOn:
+    id: "detail.go-to-cart"
+- tapOn:
+    id: "cart.checkout"
+- assertVisible:
+    id: "checkout.address.none"
+- assertNotVisible: "Jalan Contoh 20, Kota Demo"

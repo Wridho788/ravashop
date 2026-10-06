@@ -1,0 +1,71 @@
+# SHOP-E12 (P0 / SHOP-07)
+# Given the E07 order is confirmed
+# When the user cancels it, then tries to cancel again
+# Then status is cancelled; stock returns to 3/5 exactly once; the order stays in history
+appId: com.ravashop
+name: SHOP-E12 cancel order once
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- scrollUntilVisible:
+    element:
+      id: "order.cancel"
+    direction: DOWN
+- tapOn:
+    id: "order.cancel"
+- tapOn:
+    id: "android:id/button1"
+- scrollUntilVisible:
+    element:
+      id: "order.status"
+    direction: UP
+- assertVisible:
+    id: "order.status"
+    text: "Dibatalkan"
+- assertVisible:
+    id: "order.cancelled-at"
+- scrollUntilVisible:
+    element:
+      id: "order.total"
+    direction: DOWN
+- scroll
+- assertNotVisible:
+    id: "order.cancel"
+- takeScreenshot: evidence/e12-cancelled
+- back
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.item.1"
+- tapOn:
+    id: "orders.item.1"
+- scrollUntilVisible:
+    element:
+      id: "order.total"
+    direction: DOWN
+- scroll
+- assertNotVisible:
+    id: "order.cancel"
+- back
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 3
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bottle
+      STOCK_TEXT: Stok 5

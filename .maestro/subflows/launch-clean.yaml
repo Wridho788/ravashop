@@ -1,0 +1,9 @@
+# Fresh install state: clearState wipes the SQLite file, so the app seeds shop-v1 again.
+appId: com.ravashop
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "catalog.search"
+    timeout: 30000

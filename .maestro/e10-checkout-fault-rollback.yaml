@@ -1,0 +1,69 @@
+# SHOP-E10 (P0 / SHOP-06, SHOP-09) — requires the E2E build (npm run build:android:e2e)
+# Given the reference checkout and a storage fault armed mid-transaction
+# When the user confirms, then retries after the fault is released
+# Then an error shows; cart, stock, and orders are intact before the retry; the retry succeeds once
+appId: com.ravashop
+name: SHOP-E10 checkout fault rolls back, retry succeeds once
+tags:
+  - p0
+  - e2e-build
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- tapOn:
+    id: "tab.profile"
+- scrollUntilVisible:
+    element:
+      id: "e2e.fault.checkout"
+    direction: DOWN
+- tapOn:
+    id: "e2e.fault.checkout"
+- assertVisible: "Checkout berikutnya akan gagal"
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "checkout.error"
+- assertVisible: "Pesanan gagal dibuat. Keranjang dan stok tidak berubah. Silakan coba lagi."
+- takeScreenshot: evidence/e10-fault
+- back
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "2"
+- assertVisible:
+    id: "cart.item.product-bottle.quantity"
+    text: "1"
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.empty"
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 3
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- back
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.item.1"
+- assertNotVisible:
+    id: "orders.item.2"
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 1

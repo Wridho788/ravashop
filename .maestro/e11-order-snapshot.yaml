@@ -1,0 +1,67 @@
+# SHOP-E11 (P0 / SHOP-07, SHOP-08)
+# Given a confirmed order
+# When the user edits and deletes the original address, stops and relaunches, then opens the order
+# Then the order's address and price snapshot are unchanged; order and stock persist
+appId: com.ravashop
+name: SHOP-E11 order snapshot survives address change and relaunch
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- back
+- tapOn:
+    id: "tab.profile"
+- tapOn:
+    id: "profile.addresses"
+- tapOn:
+    id: "address.item.0.edit"
+- tapOn:
+    id: "address.form.recipient.clear"
+- tapOn:
+    id: "address.form.recipient"
+- inputText: "Nama Baru"
+- hideKeyboard
+- tapOn:
+    id: "address.form.save"
+- assertVisible: "Nama Baru"
+- tapOn:
+    id: "address.item.0.delete"
+- tapOn:
+    id: "android:id/button1"
+- assertVisible:
+    id: "addresses.empty"
+- back
+- runFlow: subflows/relaunch.yaml
+- tapOn:
+    id: "tab.orders"
+- tapOn:
+    id: "orders.item.1"
+- assertVisible: "Pengguna Demo"
+- assertVisible: "Jalan Contoh 10, Kota Demo"
+- assertNotVisible: "Nama Baru"
+- assertVisible: "2 × Rp250.000"
+- scrollUntilVisible:
+    element:
+      id: "order.total"
+    direction: DOWN
+- assertVisible:
+    id: "order.total"
+    text: "Rp615.000"
+- takeScreenshot: evidence/e11-snapshot
+- back
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 1

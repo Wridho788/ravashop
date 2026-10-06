@@ -1,0 +1,45 @@
+# SHOP-E13 (P0 / SHOP-08)
+# Given cart, address, and wishlist are saved
+# When the network is off and the app is stopped and relaunched, then checkout continues
+# Then data and bundled images are available and the simulated flow completes offline
+appId: com.ravashop
+name: SHOP-E13 offline relaunch and checkout
+tags:
+  - p0
+onFlowComplete:
+  - setAirplaneMode: disabled
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- scrollUntilVisible:
+    element:
+      id: "product.product-watch"
+    direction: DOWN
+- tapOn:
+    id: "product.product-watch"
+- tapOn:
+    id: "detail.wishlist"
+- back
+- setAirplaneMode: enabled
+- runFlow: subflows/relaunch.yaml
+- tapOn:
+    id: "tab.wishlist"
+- assertVisible:
+    id: "wishlist.item.product-watch"
+- tapOn:
+    id: "tab.cart"
+- assertVisible:
+    id: "cart.item.product-bag.quantity"
+    text: "2"
+- takeScreenshot: evidence/e13-offline-cart
+- tapOn:
+    id: "cart.checkout"
+- assertVisible:
+    id: "checkout.address.selected"
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- takeScreenshot: evidence/e13-offline-order

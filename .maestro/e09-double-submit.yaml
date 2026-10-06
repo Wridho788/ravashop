@@ -1,0 +1,38 @@
+# SHOP-E09 (P0 / SHOP-06, SHOP-09)
+# Given a valid checkout
+# When the user taps confirm twice quickly
+# Then the UI shows one result; one order and one stock reduction exist
+# Operation-ID replay at the database level is covered in __tests__/repository.integration.test.ts.
+appId: com.ravashop
+name: SHOP-E09 double tap creates one order
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- tapOn:
+    id: "checkout.confirm"
+    repeat: 2
+    delay: 30
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- assertNotVisible: "Batalkan pesanan?"
+- back
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.item.1"
+- assertNotVisible:
+    id: "orders.item.2"
+- takeScreenshot: evidence/e09-one-order
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 1

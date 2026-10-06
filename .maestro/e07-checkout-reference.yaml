@@ -1,0 +1,69 @@
+# SHOP-E07 (P0 / SHOP-06)
+# Given two bags, one bottle, and a valid address
+# When the user reviews and confirms the simulated checkout
+# Then subtotal Rp600.000, shipping Rp15.000, total Rp615.000; exactly one order, stock 1/4, empty cart
+appId: com.ravashop
+name: SHOP-E07 simulated checkout of the reference cart
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- runFlow: subflows/add-address-from-profile.yaml
+- runFlow: subflows/add-reference-cart.yaml
+- tapOn:
+    id: "tab.cart"
+- tapOn:
+    id: "cart.checkout"
+- assertVisible:
+    id: "checkout.simulation"
+- assertVisible:
+    id: "checkout.address.selected"
+- assertVisible:
+    id: "checkout.subtotal"
+    text: "Rp600.000"
+- assertVisible:
+    id: "checkout.shipping"
+    text: "Rp15.000"
+- assertVisible:
+    id: "checkout.total"
+    text: "Rp615.000"
+- takeScreenshot: evidence/e07-review
+- tapOn:
+    id: "checkout.confirm"
+- assertVisible:
+    id: "order.placed"
+- assertVisible:
+    id: "order.number"
+    text: "RS-0001"
+- assertVisible:
+    id: "order.status"
+    text: "Dikonfirmasi"
+- assertVisible:
+    id: "order.simulation"
+- scrollUntilVisible:
+    element:
+      id: "order.total"
+    direction: DOWN
+- assertVisible:
+    id: "order.total"
+    text: "Rp615.000"
+- takeScreenshot: evidence/e07-order
+- back
+- assertVisible:
+    id: "cart.empty"
+- tapOn:
+    id: "tab.orders"
+- assertVisible:
+    id: "orders.item.1"
+- assertNotVisible:
+    id: "orders.item.2"
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bag
+      STOCK_TEXT: Stok 1
+- runFlow:
+    file: subflows/assert-stock.yaml
+    env:
+      PRODUCT: product-bottle
+      STOCK_TEXT: Stok 4

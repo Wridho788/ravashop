@@ -1,0 +1,24 @@
+# SHOP-E02 (P0 / SHOP-01)
+# Given the catalog is available
+# When the user searches text with no match, then clears the search
+# Then an empty state appears, then the list returns
+appId: com.ravashop
+name: SHOP-E02 empty search result and recovery
+tags:
+  - p0
+---
+- runFlow: subflows/launch-clean.yaml
+- tapOn:
+    id: "catalog.search"
+- inputText: "zzz tidak ada"
+- hideKeyboard
+- assertVisible:
+    id: "catalog.empty"
+- assertVisible: "Produk tidak ditemukan"
+- takeScreenshot: evidence/e02-empty
+- tapOn:
+    id: "catalog.empty.reset"
+- assertVisible:
+    id: "product.product-bag"
+- assertNotVisible:
+    id: "catalog.empty"
